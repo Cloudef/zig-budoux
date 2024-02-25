@@ -16,6 +16,11 @@
         customRuntimeDeps = [];
       };
     in rec {
+      # nix build .
+      packages.default = env.package {
+        src = env.pkgs.lib.cleanSource ./.;
+      };
+
       # nix run .
       apps.default = apps.test;
 
