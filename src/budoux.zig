@@ -203,8 +203,8 @@ pub const ChunkIterator = struct {
             }
             index += 1;
             if (index == to) {
-                // debug("{d}..{d}: {d} => {d}", .{ unsafe_from, unsafe_to, self.history, if (from >= self.unicode_index) 69 else self.unicode_index - from });
-                // debug("{d}..{d}: {s}", .{ from, to, self.iterator.bytes[slice_start..iter.i] });
+                debug("{d}..{d}: {d} => {d}", .{ unsafe_from, unsafe_to, self.history, if (from >= self.unicode_index) 69 else self.unicode_index - from });
+                debug("{d}..{d}: {s}", .{ from, to, self.iterator.bytes[slice_start..iter.i] });
                 return self.iterator.bytes[slice_start..iter.i];
             }
         }
@@ -239,7 +239,7 @@ pub const ChunkIterator = struct {
             self.unicode_index += 1;
             const cpy = self.history;
             @memcpy(self.history[1..self.history.len], cpy[0 .. self.history.len - 1]);
-            self.history[0] = byte_index;
+            self.history[0] = self.iterator.i;
 
             if (score > 0) {
                 return .{ .begin = chunk_offset, .end = self.iterator.i };
