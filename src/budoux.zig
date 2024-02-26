@@ -156,14 +156,12 @@ pub inline fn iterator(self: *const @This(), sentence: []const u8) ChunkIterator
     return .{
         .iterator = .{ .bytes = sentence, .i = 0 },
         .model = self,
-        .unicode_len = std.unicode.utf8CountCodepoints(sentence) catch unreachable,
     };
 }
 
 pub const ChunkIterator = struct {
     iterator: std.unicode.Utf8Iterator,
     model: *const Model,
-    unicode_len: usize,
     unicode_index: usize = 0,
     history: [3]usize = .{ 0, 0, 0 },
 
@@ -171,14 +169,9 @@ pub const ChunkIterator = struct {
         if (offset == 0) {
             return self.unicode_index;
         } else if (offset < 0) {
-            const abs = @abs(offset);
-            if (abs >= self.unicode_index) return 0;
-            return self.unicode_index - abs;
+            return self.unicode_index -| @abs(offset);
         } else {
-            if (offset >= self.unicode_len or self.unicode_index >= self.unicode_len - offset) {
-                return self.unicode_len;
-            }
-            return self.unicode_index + offset;
+            return self.unicode_index +| offset;
         }
         unreachable;
     }
@@ -187,8 +180,8 @@ pub const ChunkIterator = struct {
         comptime std.debug.assert(unsafe_to > unsafe_from);
         comptime std.debug.assert(unsafe_from <= 2 and unsafe_from >= -3);
         comptime std.debug.assert(unsafe_to >= -2 and unsafe_to <= 3);
-        const a: usize = self.safeOffset(unsafe_from + 1);
-        const b: usize = self.safeOffset(unsafe_to + 1);
+        const a: usize = self.safeOffset(unsafe_from +| 1);
+        const b: usize = self.safeOffset(unsafe_to +| 1);
         if (a == b) return "";
         const from, const to = .{ @min(a, b), @max(a, b) };
         var iter: std.unicode.Utf8Iterator = .{

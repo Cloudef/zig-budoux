@@ -24,7 +24,6 @@ pub const BudouxChunkIterator = extern struct {
     model: *const budoux.Model,
     bytes: [*c]u8,
     i: usize,
-    unicode_len: usize,
     unicode_index: usize,
     history: [3]usize,
 };
@@ -35,7 +34,6 @@ export fn budoux_iterator_init(model: *budoux.Model, sentence: [*c]u8) callconv(
         .model = iter.model,
         .bytes = sentence,
         .i = iter.iterator.i,
-        .unicode_len = iter.unicode_len,
         .unicode_index = iter.unicode_index,
         .history = iter.history,
     };
@@ -45,7 +43,6 @@ export fn budoux_iterator_next(c_iter: *BudouxChunkIterator) callconv(.C) budoux
     var iter: budoux.ChunkIterator = .{
         .model = c_iter.model,
         .iterator = .{ .bytes = std.mem.span(c_iter.bytes), .i = c_iter.i },
-        .unicode_len = c_iter.unicode_len,
         .unicode_index = c_iter.unicode_index,
         .history = c_iter.history,
     };
