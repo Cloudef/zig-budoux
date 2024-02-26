@@ -2,11 +2,6 @@
 
 [Budoux](https://github.com/google/budoux) for Zig (and C)
 
-> [!NOTE]
-> Thai model is disabled due to this upstream issue https://github.com/google/budoux/issues/504
-> This implementation does not encode strings to utf16 (allocation free)
-> Unfortunately this means we can't use the thai model as it contains keys that are slices of utf16 bytes
-
 ---
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

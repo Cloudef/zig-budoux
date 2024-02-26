@@ -20,9 +20,7 @@ typedef struct {
 enum BudouxPrebuiltModel {
     budoux_model_ja,
     budoux_model_ja_knbc,
-    // Disabled as thai model is broken
-    // https://github.com/google/budoux/issues/504
-    // budoux_model_th,
+    budoux_model_th,
     budoux_model_zh_hans,
     budoux_model_zh_hant,
 };
