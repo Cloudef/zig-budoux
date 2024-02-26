@@ -33,15 +33,14 @@ try std.testing.expectEqualSlices(u8, "天気です。", iter.next().?);
 BudouxModel model = budoux_init(budoux_model_ja);
 BudouxChunkIterator iter = budoux_iterator_init(model, "今日は天気です。");
 BudouxChunk chunk;
-chunk = budoux_iterator_next(iter); // 今日は
-chunk = budoux_iterator_next(iter); // 天気です。
-budoux_iterator_deinit(iter);
+chunk = budoux_iterator_next(&iter); // 今日は
+chunk = budoux_iterator_next(&iter); // 天気です。
 budoux_deinit(model);
 ```
 
 > [!NOTE]
 > zig-budoux does not allocate any strings, thus it won't add any html markup or zero width spaces.
-> However with `parser.iterator` it is simple to construct strings for your needs.
+> However with `model.iterator` it is simple to construct strings for your needs.
 > To parse html you need to bring your own html parser.
 
 ## Depend

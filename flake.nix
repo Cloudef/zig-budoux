@@ -107,7 +107,7 @@
 
       > [!NOTE]
       > zig-budoux does not allocate any strings, thus it won't add any html markup or zero width spaces.
-      > However with `parser.iterator` it is simple to construct strings for your needs.
+      > However with `model.iterator` it is simple to construct strings for your needs.
       > To parse html you need to bring your own html parser.
 
       ## Depend
