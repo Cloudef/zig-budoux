@@ -237,8 +237,8 @@ pub const ChunkIterator = struct {
             score += 2 * self.model.get(.TW4, self.unicodeSlice(byte_index, 0, 3));
 
             self.unicode_index += 1;
-            const cpy = self.history;
-            @memcpy(self.history[1..self.history.len], cpy[0 .. self.history.len - 1]);
+            const cpy: [2]usize = self.history[0..2].*;
+            @memcpy(self.history[1..3], cpy[0..2]);
             self.history[0] = self.iterator.i;
 
             debug("{s}, {d}", .{ self.iterator.bytes[chunk_offset..self.iterator.i], score });
