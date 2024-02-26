@@ -180,13 +180,19 @@ pub const ChunkIterator = struct {
         comptime std.debug.assert(unsafe_to > unsafe_from);
         comptime std.debug.assert(unsafe_from <= 2 and unsafe_from >= -3);
         comptime std.debug.assert(unsafe_to >= -2 and unsafe_to <= 3);
+
         const from: usize = self.safeOffset(unsafe_from +| 1);
         const to: usize = self.safeOffset(unsafe_to +| 1);
-        if (from == to) return "";
+
+        if (from == to) {
+            return "";
+        }
+
         var iter: std.unicode.Utf8Iterator = .{
             .bytes = self.iterator.bytes,
             .i = if (from >= self.unicode_index) byte_index else self.history[self.unicode_index - from],
         };
+
         var index: usize = if (from >= self.unicode_index) self.unicode_index else from;
         var slice_start: usize = 0;
         while (iter.nextCodepointSlice()) |cp| {
@@ -200,6 +206,7 @@ pub const ChunkIterator = struct {
                 return self.iterator.bytes[slice_start..iter.i];
             }
         }
+
         return self.iterator.bytes[slice_start..iter.i];
     }
 
@@ -239,10 +246,12 @@ pub const ChunkIterator = struct {
                 return .{ .begin = chunk_offset, .end = self.iterator.i };
             }
         }
+
         // Always return the last chunk
         if (chunk_offset != self.iterator.i) {
             return .{ .begin = chunk_offset, .end = self.iterator.i };
         }
+
         return null;
     }
 
