@@ -272,7 +272,7 @@ test "ja" {
         try std.testing.expectEqualSlices(u8, "天気です。", iter.next().?);
     }
 
-    const tests = [_][]const u8{
+    const tests: []const []const u8 = &.{
         "今日は_とても_良い_天気です。",
         "これ以上_利用する_場合は_教えてください。",
         "食器は_そのまま_入れて_大丈夫です。",
