@@ -180,10 +180,9 @@ pub const ChunkIterator = struct {
         comptime std.debug.assert(unsafe_to > unsafe_from);
         comptime std.debug.assert(unsafe_from <= 2 and unsafe_from >= -3);
         comptime std.debug.assert(unsafe_to >= -2 and unsafe_to <= 3);
-        const a: usize = self.safeOffset(unsafe_from +| 1);
-        const b: usize = self.safeOffset(unsafe_to +| 1);
-        if (a == b) return "";
-        const from, const to = .{ @min(a, b), @max(a, b) };
+        const from: usize = self.safeOffset(unsafe_from +| 1);
+        const to: usize = self.safeOffset(unsafe_to +| 1);
+        if (from == to) return "";
         var iter: std.unicode.Utf8Iterator = .{
             .bytes = self.iterator.bytes,
             .i = if (from >= self.unicode_index) byte_index else self.history[self.unicode_index - from],
