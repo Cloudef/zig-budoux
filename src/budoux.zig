@@ -10,8 +10,6 @@ inline fn debug(comptime fmt: []const u8, args: anytype) void {
 pub const BuiltinModel = enum(u8) {
     ja,
     ja_knbc,
-    // Disabled as thai model is broken
-    // https://github.com/google/budoux/issues/504
     // th,
     zh_hans,
     zh_hant,
@@ -137,6 +135,7 @@ pub const Map = blk: {
 pub fn get(self: @This(), comptime map: Map, key: []const u8) i32 {
     if (key.len == 0) return 0;
     const score = @field(self, @tagName(map)).get(key) orelse 0;
+    // debug("{s}: {s} => {d}", .{ @tagName(map), key, score });
     return score;
 }
 
@@ -196,7 +195,7 @@ pub const ChunkIterator = struct {
             .bytes = self.iterator.bytes,
             .i = if (from >= self.unicode_index) byte_index else self.history[self.unicode_index - from],
         };
-        var index: usize = if (from >= self.unicode_index) self.unicode_index else 0;
+        var index: usize = if (from >= self.unicode_index) self.unicode_index else from;
         var slice_start: usize = 0;
         while (iter.nextCodepointSlice()) |cp| {
             if (index == from) {
@@ -204,8 +203,8 @@ pub const ChunkIterator = struct {
             }
             index += 1;
             if (index == to) {
-                // debug("{d}..{d}: {d}", .{unsafe_from, unsafe_to, self.history});
-                // debug("{d}..{d}: {s}", .{from, to, self.iterator.bytes[slice_start..iter.i]});
+                // debug("{d}..{d}: {d} => {d}", .{ unsafe_from, unsafe_to, self.history, if (from >= self.unicode_index) 69 else self.unicode_index - from });
+                // debug("{d}..{d}: {s}", .{ from, to, self.iterator.bytes[slice_start..iter.i] });
                 return self.iterator.bytes[slice_start..iter.i];
             }
         }
@@ -238,7 +237,8 @@ pub const ChunkIterator = struct {
             score += 2 * self.model.get(.TW4, self.unicodeSlice(byte_index, 0, 3));
 
             self.unicode_index += 1;
-            std.mem.copyForwards(usize, self.history[1..self.history.len], self.history[0 .. self.history.len - 1]);
+            const cpy = self.history;
+            @memcpy(self.history[1..self.history.len], cpy[0 .. self.history.len - 1]);
             self.history[0] = byte_index;
 
             if (score > 0) {
