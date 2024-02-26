@@ -13,7 +13,6 @@
       # <https://github.com/Cloudef/mach-flake/blob/master/flake.nix>
       env = zig2nix.outputs.zig-env.${system} {
         zig = zig2nix.outputs.packages.${system}.zig.master.bin;
-        customRuntimeDeps = [];
       };
     in rec {
       # nix build .
