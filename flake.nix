@@ -100,9 +100,8 @@
       BudouxModel model = budoux_init(budoux_model_ja);
       BudouxChunkIterator iter = budoux_iterator_init(model, "今日は天気です。");
       BudouxChunk chunk;
-      chunk = budoux_iterator_next(iter); // 今日は
-      chunk = budoux_iterator_next(iter); // 天気です。
-      budoux_iterator_deinit(iter);
+      chunk = budoux_iterator_next(&iter); // 今日は
+      chunk = budoux_iterator_next(&iter); // 天気です。
       budoux_deinit(model);
       ```
 

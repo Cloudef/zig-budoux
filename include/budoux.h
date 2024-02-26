@@ -7,7 +7,15 @@ extern "C" {
 #endif
 
 typedef struct {} *BudouxModel;
-typedef struct {} *BudouxChunkIterator;
+
+typedef struct {
+    const BudouxModel *model;
+    const char *bytes;
+    size_t i;
+    size_t unicode_len;
+    size_t unicode_index;
+    size_t history[3];
+} BudouxChunkIterator;
 
 enum BudouxPrebuiltModel {
     budoux_model_ja,
@@ -34,9 +42,7 @@ BudouxChunkIterator budoux_iterator_init(BudouxModel model, const char *sentence
 
 /// Returns the next chunk as a `Chunk` containing the `begin` and `end` range
 /// Final chunk will be a `Chunk` with `begin` and `end` set to 0
-BudouxChunk budoux_iterator_next(BudouxChunkIterator iterator);
-
-void budoux_iterator_deinit(BudouxChunkIterator iterator);
+BudouxChunk budoux_iterator_next(BudouxChunkIterator *iterator);
 
 #ifdef __cplusplus
 }
