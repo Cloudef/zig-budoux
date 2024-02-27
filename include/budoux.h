@@ -12,7 +12,6 @@ typedef struct {
     const BudouxModel *model;
     const char *bytes;
     size_t i;
-    size_t unicode_len;
     size_t unicode_index;
     size_t history[3];
 } BudouxChunkIterator;
