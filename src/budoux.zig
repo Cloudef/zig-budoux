@@ -7,7 +7,7 @@ inline fn debug(comptime fmt: []const u8, args: anytype) void {
     if (comptime Debug) std.debug.print(fmt ++ "\n", args);
 }
 
-pub const BuiltinModel = enum(u8) {
+pub const BuiltinModel = enum {
     ja,
     ja_knbc,
     th,
@@ -84,7 +84,23 @@ pub fn initFromJson(allocator: std.mem.Allocator, bytes: []const u8) InitFromJso
     return self;
 }
 
-fn decompressBuiltinModel(allocator: std.mem.Allocator, model: BuiltinModel) ![]const u8 {
+pub const InitFromZlibJsonError = InitFromJsonError ||
+    std.compress.flate.inflate.Inflate(.zlib, std.io.FixedBufferStream([]u8).Reader).Error;
+
+pub fn initFromZlibJson(allocator: std.mem.Allocator, bytes: []const u8) InitFromZlibJsonError!@This() {
+    var arena = std.heap.ArenaAllocator.init(allocator);
+    defer arena.deinit();
+    var rstream = std.io.fixedBufferStream(bytes);
+    var wstream: std.ArrayListUnmanaged(u8) = .{};
+    try std.compress.zlib.decompress(rstream.reader(), wstream.writer(arena.allocator()));
+    return initFromJson(allocator, wstream.items);
+}
+
+pub const InitError = InitFromZlibJsonError;
+
+/// Sadly std hash maps can't be filled comptime :(
+/// If the status quo ever changes, provide ability to load models comptime
+pub fn init(allocator: std.mem.Allocator, model: BuiltinModel) InitError!@This() {
     const compressed = switch (model) {
         .ja => @embedFile("budoux-ja"),
         .ja_knbc => @embedFile("budoux-ja-knbc"),
@@ -92,21 +108,7 @@ fn decompressBuiltinModel(allocator: std.mem.Allocator, model: BuiltinModel) ![]
         .zh_hans => @embedFile("budoux-zh-hans"),
         .zh_hant => @embedFile("budoux-zh-hant"),
     };
-    var rstream = std.io.fixedBufferStream(compressed);
-    var wstream: std.ArrayListUnmanaged(u8) = .{};
-    try std.compress.zlib.decompress(rstream.reader(), wstream.writer(allocator));
-    return wstream.items;
-}
-
-pub const InitError = InitFromJsonError ||
-    std.compress.flate.inflate.Inflate(.zlib, std.io.FixedBufferStream([]u8).Reader).Error;
-
-/// Sadly std hash maps can't be filled comptime :(
-/// If the status quo ever changes, provide ability to load models comptime
-pub fn init(allocator: std.mem.Allocator, model: BuiltinModel) InitError!@This() {
-    var arena = std.heap.ArenaAllocator.init(allocator);
-    defer arena.deinit();
-    return initFromJson(allocator, try decompressBuiltinModel(arena.allocator(), model));
+    return initFromZlibJson(allocator, compressed);
 }
 
 pub const Map = blk: {

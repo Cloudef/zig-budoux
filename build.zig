@@ -68,6 +68,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = .ReleaseFast,
         .pic = true, // to stop clang from complaining
     });
+    lib.addIncludePath(.{ .path = "include" });
     lib.installHeader("include/budoux.h", "budoux.h");
     try addModels(b, &lib.root_module, dir);
     b.installArtifact(lib);
