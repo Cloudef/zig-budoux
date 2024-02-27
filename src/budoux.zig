@@ -162,21 +162,21 @@ pub inline fn iterator(self: *const @This(), sentence: []const u8) ChunkIterator
 pub const ChunkIterator = struct {
     iterator: std.unicode.Utf8Iterator,
     model: *const Model,
-    unicode_index: usize = 0,
+    i_codepoint: usize = 0,
     history: [3]usize = .{ 0, 0, 0 },
 
     inline fn safeOffset(self: @This(), comptime offset: isize) usize {
         if (offset == 0) {
-            return self.unicode_index;
+            return self.i_codepoint;
         } else if (offset < 0) {
-            return self.unicode_index -| @abs(offset);
+            return self.i_codepoint -| @abs(offset);
         } else {
-            return self.unicode_index +| offset;
+            return self.i_codepoint +| offset;
         }
         unreachable;
     }
 
-    fn unicodeSlice(self: @This(), byte_index: usize, comptime unsafe_from: isize, comptime unsafe_to: isize) []const u8 {
+    fn codepointAwareSlice(self: @This(), byte_index: usize, comptime unsafe_from: isize, comptime unsafe_to: isize) []const u8 {
         comptime std.debug.assert(unsafe_to > unsafe_from);
         comptime std.debug.assert(unsafe_from <= 2 and unsafe_from >= -3);
         comptime std.debug.assert(unsafe_to >= -2 and unsafe_to <= 3);
@@ -190,10 +190,10 @@ pub const ChunkIterator = struct {
 
         var iter: std.unicode.Utf8Iterator = .{
             .bytes = self.iterator.bytes,
-            .i = if (from >= self.unicode_index) byte_index else self.history[self.unicode_index - from],
+            .i = if (from >= self.i_codepoint) byte_index else self.history[self.i_codepoint - from],
         };
 
-        var index: usize = if (from >= self.unicode_index) self.unicode_index else from;
+        var index: usize = if (from >= self.i_codepoint) self.i_codepoint else from;
         var slice_start: usize = 0;
         while (iter.nextCodepointSlice()) |cp| {
             if (index == from) {
@@ -201,7 +201,7 @@ pub const ChunkIterator = struct {
             }
             index += 1;
             if (index == to) {
-                debug("{d}..{d}: {d} => {d}", .{ unsafe_from, unsafe_to, self.history, if (from >= self.unicode_index) 69 else self.unicode_index - from });
+                debug("{d}..{d}: {d} => {d}", .{ unsafe_from, unsafe_to, self.history, if (from >= self.i_codepoint) 69 else self.i_codepoint - from });
                 debug("{d}..{d}: {s}", .{ from, to, self.iterator.bytes[slice_start..iter.i] });
                 return self.iterator.bytes[slice_start..iter.i];
             }
@@ -221,21 +221,21 @@ pub const ChunkIterator = struct {
         while (self.iterator.nextCodepointSlice()) |cp| {
             var score = -self.model.base_score;
             const byte_index = self.iterator.i - cp.len;
-            score += 2 * self.model.get(.UW1, self.unicodeSlice(byte_index, -3, -2));
-            score += 2 * self.model.get(.UW2, self.unicodeSlice(byte_index, -2, -1));
-            score += 2 * self.model.get(.UW3, self.unicodeSlice(byte_index, -1, 0));
-            score += 2 * self.model.get(.UW4, self.unicodeSlice(byte_index, 0, 1));
-            score += 2 * self.model.get(.UW5, self.unicodeSlice(byte_index, 1, 2));
-            score += 2 * self.model.get(.UW6, self.unicodeSlice(byte_index, 2, 3));
-            score += 2 * self.model.get(.BW1, self.unicodeSlice(byte_index, -2, 0));
-            score += 2 * self.model.get(.BW2, self.unicodeSlice(byte_index, -1, 1));
-            score += 2 * self.model.get(.BW3, self.unicodeSlice(byte_index, 0, 2));
-            score += 2 * self.model.get(.TW1, self.unicodeSlice(byte_index, -3, 0));
-            score += 2 * self.model.get(.TW2, self.unicodeSlice(byte_index, -2, 1));
-            score += 2 * self.model.get(.TW3, self.unicodeSlice(byte_index, -1, 2));
-            score += 2 * self.model.get(.TW4, self.unicodeSlice(byte_index, 0, 3));
+            score += 2 * self.model.get(.UW1, self.codepointAwareSlice(byte_index, -3, -2));
+            score += 2 * self.model.get(.UW2, self.codepointAwareSlice(byte_index, -2, -1));
+            score += 2 * self.model.get(.UW3, self.codepointAwareSlice(byte_index, -1, 0));
+            score += 2 * self.model.get(.UW4, self.codepointAwareSlice(byte_index, 0, 1));
+            score += 2 * self.model.get(.UW5, self.codepointAwareSlice(byte_index, 1, 2));
+            score += 2 * self.model.get(.UW6, self.codepointAwareSlice(byte_index, 2, 3));
+            score += 2 * self.model.get(.BW1, self.codepointAwareSlice(byte_index, -2, 0));
+            score += 2 * self.model.get(.BW2, self.codepointAwareSlice(byte_index, -1, 1));
+            score += 2 * self.model.get(.BW3, self.codepointAwareSlice(byte_index, 0, 2));
+            score += 2 * self.model.get(.TW1, self.codepointAwareSlice(byte_index, -3, 0));
+            score += 2 * self.model.get(.TW2, self.codepointAwareSlice(byte_index, -2, 1));
+            score += 2 * self.model.get(.TW3, self.codepointAwareSlice(byte_index, -1, 2));
+            score += 2 * self.model.get(.TW4, self.codepointAwareSlice(byte_index, 0, 3));
 
-            self.unicode_index += 1;
+            self.i_codepoint += 1;
             const cpy: [2]usize = self.history[0..2].*;
             @memcpy(self.history[1..3], cpy[0..2]);
             self.history[0] = self.iterator.i;
