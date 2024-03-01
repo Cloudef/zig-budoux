@@ -1,10 +1,10 @@
 #pragma once
 
-typedef unsigned long int budoux_size_t;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef unsigned long int budoux_size_t;
 
 typedef struct {} *BudouxModel;
 
