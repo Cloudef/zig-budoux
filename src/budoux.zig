@@ -85,7 +85,7 @@ pub fn initFromJson(allocator: std.mem.Allocator, bytes: []const u8) InitFromJso
 }
 
 pub const InitFromZlibJsonError = InitFromJsonError ||
-    std.compress.flate.inflate.Inflate(.zlib, std.io.FixedBufferStream([]u8).Reader).Error;
+    std.compress.flate.inflate.Decompressor(.zlib, std.io.FixedBufferStream([]u8).Reader).Error;
 
 pub fn initFromZlibJson(allocator: std.mem.Allocator, bytes: []const u8) InitFromZlibJsonError!@This() {
     var arena = std.heap.ArenaAllocator.init(allocator);
