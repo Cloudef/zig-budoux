@@ -39,9 +39,7 @@ fn compressModels(b: *std.Build) ![]const u8 {
 
 fn addModels(b: *std.Build, mod: *std.Build.Module, dir: []const u8) !void {
     inline for (models) |name| {
-        var arena = std.heap.ArenaAllocator.init(b.allocator);
-        defer arena.deinit();
-        const path = try std.fmt.allocPrint(arena.allocator(), "{s}/{s}.z", .{ dir, name });
+        const path = b.fmt("{s}/{s}.z", .{ dir, name });
         var import: [("budoux-" ++ name).len]u8 = ("budoux-" ++ name).*;
         std.mem.replaceScalar(u8, &import, '_', '-');
         mod.addAnonymousImport(import[0..], .{
