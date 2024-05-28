@@ -43,7 +43,7 @@ fn addModels(b: *std.Build, mod: *std.Build.Module, dir: []const u8) !void {
         var import: [("budoux-" ++ name).len]u8 = ("budoux-" ++ name).*;
         std.mem.replaceScalar(u8, &import, '_', '-');
         mod.addAnonymousImport(import[0..], .{
-            .root_source_file = .{ .path = path },
+            .root_source_file = .{ .cwd_relative = path },
         });
     }
 }
@@ -55,24 +55,24 @@ pub fn build(b: *std.Build) !void {
     const dir = try compressModels(b);
 
     const mod = b.addModule("zig-budoux", .{
-        .root_source_file = .{ .path = "src/budoux.zig" },
+        .root_source_file = b.path("src/budoux.zig"),
     });
     try addModels(b, mod, dir);
 
     const lib = b.addStaticLibrary(.{
         .name = "budoux",
-        .root_source_file = .{ .path = "src/c.zig" },
+        .root_source_file = b.path("src/c.zig"),
         .target = target,
         .optimize = .ReleaseFast,
         .pic = true, // to stop clang from complaining
     });
-    lib.addIncludePath(.{ .path = "include" });
-    lib.installHeader(.{ .path = "include/budoux.h" }, "budoux.h");
+    lib.addIncludePath(b.path("include"));
+    lib.installHeader(b.path("include/budoux.h"), "budoux.h");
     try addModels(b, &lib.root_module, dir);
     b.installArtifact(lib);
 
     const exe_test = b.addTest(.{
-        .root_source_file = .{ .path = "src/budoux.zig" },
+        .root_source_file = b.path("src/budoux.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -85,7 +85,7 @@ pub fn build(b: *std.Build) !void {
 
     const doc_obj = b.addObject(.{
         .name = "docs",
-        .root_source_file = .{ .path = "src/budoux.zig" },
+        .root_source_file = b.path("src/budoux.zig"),
         .target = target,
         .optimize = optimize,
     });

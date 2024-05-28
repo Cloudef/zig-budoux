@@ -6,7 +6,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Project is tested on zig version 0.13.0-dev.75+5c9eb4081
+Project is tested on zig version 0.13.0-dev.267+793f820b3
 
 ## Example
 
