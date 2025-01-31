@@ -125,7 +125,7 @@ pub const Map = blk: {
     }
 
     break :blk @Type(.{
-        .Enum = .{
+        .@"enum" = .{
             .tag_type = std.math.IntFittingRange(0, count),
             .fields = &fields,
             .decls = &.{},

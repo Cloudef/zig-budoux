@@ -68,7 +68,7 @@ pub fn build(b: *std.Build) !void {
     });
     lib.addIncludePath(b.path("include"));
     lib.installHeader(b.path("include/budoux.h"), "budoux.h");
-    try addModels(b, &lib.root_module, dir);
+    try addModels(b, lib.root_module, dir);
     b.installArtifact(lib);
 
     const exe_test = b.addTest(.{
@@ -76,7 +76,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
     });
-    try addModels(b, &exe_test.root_module, dir);
+    try addModels(b, exe_test.root_module, dir);
     const run_test_exe = b.addRunArtifact(exe_test);
     const run_test = b.step("test", "Run unit tests");
     run_test.dependOn(&run_test_exe.step);
@@ -89,7 +89,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
     });
-    try addModels(b, &doc_obj.root_module, dir);
+    try addModels(b, doc_obj.root_module, dir);
 
     const install_docs = b.addInstallDirectory(.{
         .source_dir = doc_obj.getEmittedDocs(),
