@@ -9,8 +9,8 @@
     },
     .dependencies = .{
         .budoux = .{
-            .url = "git+https://github.com/google/budoux.git#v0.6.2",
-            .hash = "12204e884e951d81fe7bacc935f1e65fff06515a4e548178cef91a79cac4b2d7d1c8",
+            .url = "git+https://github.com/google/budoux.git?ref=v0.6.4#1f201873ccaf38cd318a2c4f07ae9f8b88a1f315",
+            .hash = "122003bcee374cd6a88bb88936201d1d8734843e465db3c15fa3cf7bed7c3dc9c6c2",
         },
     },
 }
