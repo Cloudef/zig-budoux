@@ -19,13 +19,13 @@ comptime {
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 
-export fn budoux_init_from_json(bytes: [*c]u8, len: c.budoux_size_t) callconv(.C) ?*budoux.Model {
+export fn budoux_init_from_json(bytes: [*]u8, len: c.budoux_size_t) callconv(.C) ?*budoux.Model {
     const model = gpa.allocator().create(budoux.Model) catch return null;
     model.* = budoux.initFromJson(gpa.allocator(), bytes[0..len]) catch return null;
     return model;
 }
 
-export fn budoux_init_from_zlib_json(bytes: [*c]u8, len: c.budoux_size_t) callconv(.C) ?*budoux.Model {
+export fn budoux_init_from_zlib_json(bytes: [*]u8, len: c.budoux_size_t) callconv(.C) ?*budoux.Model {
     const model = gpa.allocator().create(budoux.Model) catch return null;
     model.* = budoux.initFromZlibJson(gpa.allocator(), bytes[0..len]) catch return null;
     return model;
@@ -42,12 +42,12 @@ export fn budoux_deinit(model: *budoux.Model) callconv(.C) void {
     gpa.allocator().destroy(model);
 }
 
-export fn budoux_iterator_init(model: *budoux.Model, sentence: [*c]u8) callconv(.C) c.BudouxChunkIterator {
+export fn budoux_iterator_init(model: *budoux.Model, sentence: [*:0]u8) callconv(.C) c.BudouxChunkIterator {
     const slice = std.mem.span(sentence);
     return budoux_iterator_init_from_slice(model, sentence, slice.len);
 }
 
-export fn budoux_iterator_init_from_slice(model: *budoux.Model, sentence: [*c]u8, len: c.budoux_size_t) callconv(.C) c.BudouxChunkIterator {
+export fn budoux_iterator_init_from_slice(model: *budoux.Model, sentence: [*]u8, len: c.budoux_size_t) callconv(.C) c.BudouxChunkIterator {
     const iter = model.iterator(sentence[0..len]);
     return .{
         .model = @ptrCast(iter.model),
