@@ -61,6 +61,13 @@ pub fn build(b: *std.Build) !void {
     });
     try addModels(b, mod, dir);
 
+    const budoux_h = b.addTranslateC(.{
+        .root_source_file = b.path("include/budoux.h"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = false,
+    });
+
     const lib = b.addStaticLibrary(.{
         .name = "budoux",
         .root_source_file = b.path("src/c.zig"),
@@ -68,7 +75,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = .ReleaseFast,
         .pic = true, // to stop clang from complaining
     });
-    lib.addIncludePath(b.path("include"));
+    lib.root_module.addImport("budoux.h", budoux_h.createModule());
     lib.installHeader(b.path("include/budoux.h"), "budoux.h");
     try addModels(b, lib.root_module, dir);
     b.installArtifact(lib);

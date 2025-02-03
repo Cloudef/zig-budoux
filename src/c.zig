@@ -1,9 +1,6 @@
 const std = @import("std");
 const budoux = @import("budoux.zig");
-
-const c = @cImport({
-    @cInclude("budoux.h");
-});
+const c = @import("budoux.h");
 
 comptime {
     // Sucks but size_t isn't part of the C compiler but rather part of the C stdlib.
