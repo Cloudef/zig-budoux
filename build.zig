@@ -56,6 +56,8 @@ pub fn build(b: *std.Build) !void {
 
     const mod = b.addModule("zig-budoux", .{
         .root_source_file = b.path("src/budoux.zig"),
+        .target = target,
+        .optimize = optimize,
     });
     try addModels(b, mod, dir);
 
