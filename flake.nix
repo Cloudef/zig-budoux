@@ -14,10 +14,10 @@
       env = zig2nix.outputs.zig-env.${system} {
         zig = zig2nix.outputs.packages.${system}.zig-master;
       };
-    in rec {
+    in with env.pkgs.lib; {
       # nix build .
       packages.default = env.package {
-        src = env.pkgs.lib.cleanSource ./.;
+        src = cleanSource ./.;
       };
 
       # nix run .
@@ -44,17 +44,8 @@
       # nix run .#docs
       apps.docs = env.app [] "zig build docs -- \"$@\"";
 
-      # nix run .#deps
-      apps.deps = env.showExternalDeps;
-
-      # nix run .#zon2json
-      apps.zon2json = env.app [env.zon2json] "zon2json \"$@\"";
-
-      # nix run .#zon2json-lock
-      apps.zon2json-lock = env.app [env.zon2json-lock] "zon2json-lock \"$@\"";
-
-      # nix run .#zon2nix
-      apps.zon2nix = env.app [env.zon2nix] "zon2nix \"$@\"";
+      # nix run .#zig2nix
+      apps.zig2nix = env.app [] "zig2nix \"$@\"";
 
       # nix develop
       devShells.default = env.mkShell {};
