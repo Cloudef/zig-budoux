@@ -1,6 +1,7 @@
 .{
-    .name = "zig-budoux",
+    .name = .budoux,
     .version = "0.6.2",
+    .fingerprint = 0x3e95f8b90107ff07,
     .paths = .{
         "src",
         "build.zig",

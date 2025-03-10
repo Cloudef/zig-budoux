@@ -12,7 +12,7 @@
       # Check the flake.nix in zig-flake project for more options:
       # <https://github.com/Cloudef/mach-flake/blob/master/flake.nix>
       env = zig2nix.outputs.zig-env.${system} {
-        zig = zig2nix.outputs.packages.${system}.zig.master.bin;
+        zig = zig2nix.outputs.packages.${system}.zig-master;
       };
     in rec {
       # nix build .
