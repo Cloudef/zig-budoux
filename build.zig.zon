@@ -1,6 +1,6 @@
 .{
     .name = .budoux,
-    .version = "0.6.2",
+    .version = "0.7.0",
     .fingerprint = 0x3e95f8b90107ff07,
     .paths = .{
         "src",
@@ -10,8 +10,8 @@
     },
     .dependencies = .{
         .budoux = .{
-            .url = "git+https://github.com/google/budoux.git?ref=v0.6.4#1f201873ccaf38cd318a2c4f07ae9f8b88a1f315",
-            .hash = "122003bcee374cd6a88bb88936201d1d8734843e465db3c15fa3cf7bed7c3dc9c6c2",
+            .url = "git+https://github.com/google/budoux.git?ref=v0.7.0#d0969ef7187c18f77908464008d5dfb154bbcafc",
+            .hash = "N-V-__8AADPcCwDURb8fZGdaCt75OEs3ihDMfi7lYEvO1L8i",
         },
     },
 }
